@@ -1,0 +1,76 @@
+{
+	"name": "noodle-client",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"serve": "vue-cli-service serve",
+		"build": "vue-cli-service build",
+		"lint": "vue-cli-service lint"
+	},
+	"dependencies": {
+		"axios": "^0.21.1",
+		"core-js": "^2.6.11",
+		"highlight.js": "^9.16.2",
+		"katex": "^0.12.0",
+		"tiptap": "^1.27.1",
+		"tiptap-extensions": "^1.29.1",
+		"vue": "^2.6.11",
+		"vue-context": "^6.0.0",
+		"vue-material-design-icons": "^3.4.0",
+		"vue-router": "^3.3.4",
+		"vue-select": "^3.10.3",
+		"vue-sweetalert2": "^3.0.5",
+		"vuedraggable": "^2.24.0",
+		"vuex": "^3.5.1"
+	},
+	"devDependencies": {
+		"@vue/cli-plugin-babel": "^3.12.1",
+		"@vue/cli-plugin-eslint": "^3.12.1",
+		"@vue/cli-service": "^3.12.1",
+		"babel-eslint": "^10.1.0",
+		"eslint": "^5.16.0",
+		"eslint-config-prettier": "^6.11.0",
+		"eslint-plugin-prettier": "^3.1.4",
+		"eslint-plugin-vue": "^5.2.3",
+		"node-sass": "^4.14.1",
+		"prettier": "^2.0.5",
+		"sass-loader": "^7.3.1",
+		"vue-cli-plugin-pug": "^1.0.7",
+		"vue-template-compiler": "^2.6.11"
+	},
+	"eslintConfig": {
+		"root": true,
+		"env": {
+			"node": true
+		},
+		"extends": [
+			"plugin:vue/essential",
+			"eslint:recommended",
+			"prettier"
+		],
+		"plugins": [
+			"vue",
+			"prettier"
+		],
+		"rules": {
+			"prettier/prettier": "error",
+			"camelcase": "off",
+			"no-underscore-dangle": "off",
+			"no-plusplus": "off",
+			"func-names": "off",
+			"no-console": "warn"
+		},
+		"parserOptions": {
+			"parser": "babel-eslint"
+		}
+	},
+	"postcss": {
+		"plugins": {
+			"autoprefixer": {}
+		}
+	},
+	"browserslist": [
+		"> 1%",
+		"last 2 versions"
+	]
+}
