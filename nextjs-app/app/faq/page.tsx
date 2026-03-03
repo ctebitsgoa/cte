@@ -1,83 +1,161 @@
 'use client'
 
+interface FAQItem {
+  question: string
+  answer: string
+}
+
+interface FAQSection {
+  title: string
+  items: FAQItem[]
+}
+
+const faqData: FAQSection[] = [
+  {
+    title: 'Basics',
+    items: [
+      {
+        question: 'What is CTE?',
+        answer: 'CTE is an organisation in BPGC. Its motive is to enhance the tech culture of the campus. It conducts a variety of courses for students. It also organizes tech weekends, hackathons, academic assistance program and a lot more.',
+      },
+      {
+        question: 'Why should I join a CTE course?',
+        answer: 'CTE courses are a great way to learn new skills and technologies beyond your regular curriculum. The courses are taught by experienced seniors, cover practical topics, and help you build projects that strengthen your resume. They also connect you with like-minded peers and mentors on campus.',
+      },
+      {
+        question: 'Does CTE have a faculty coordinator?',
+        answer: 'Yes, Dr. Bharat M. Deshpande is our faculty coordinator.',
+      },
+    ],
+  },
+  {
+    title: 'Courses',
+    items: [
+      {
+        question: 'Who would teach me the courses? What do I do if I have a doubt in the course?',
+        answer: 'The courses are taught by your seniors generally 3rd and 4th yearites. Instructors are selected based on their credentials, they are quite well versed with subject matter. So rest assured about them. Majority of courses are in association with various technical clubs. Mentors(2nd yearites) are alloted in courses to help you out with the course.',
+      },
+      {
+        question: 'Will there be evaluative components in the course?',
+        answer: 'Yes, there will be various evaluative components, the exact details would be provided in course handout and will vary from course to course. These are required to decide the merit and completion certificates. Usually the final project will hold the maximum weight amongst the evaluative components.',
+      },
+      {
+        question: 'Will I get any certificates on course completion?',
+        answer: 'When you complete a CTE course, you may receive a certificate of completion or an equivalent certification based on your overall performance in different evaluative components assessed throughout the course. Top performers in each course get a certificate of merit.',
+      },
+      {
+        question: 'How much time should I dedicate to successfully complete a course?',
+        answer: 'Most courses have 2-3 classes a week and each class takes 1.5 hours, apart from that you are given one assignment a week (or two weeks, depending on the instructors and course requirements). Attending the classes regularly and completing assignments i.e. nearly 3 hours a week (excluding the classes) will be enough.',
+      },
+      {
+        question: 'I took a course now I find I am not able to continue it alongside my academics. How can I withdraw?',
+        answer: 'You can withdraw from any course whenever you wish to by informing CTE. However, the course fee would be refunded only if you withdraw during deregistration window in starting of each session. (Refer to REGISTRATION AND DEREGISTRATION.)',
+      },
+      {
+        question: 'Will I get my money back if I withdraw?',
+        answer: 'If you deregister within the stipulated time for deregistration your money will be refunded without any hassle. If you deregister later your fees will not be refunded.',
+      },
+      {
+        question: 'Will I get a certificate if I withdraw?',
+        answer: 'Certificate of participation are not provided. Each course has a final evaluative components performance in which is the criteria for course completion so dropping the course will not award you any kind of certificate.',
+      },
+      {
+        question: 'Are CTE courses in sem 1 and 2 linked?',
+        answer: 'A few courses offered in semester 1 have a more advanced continuation in semester 2, you will have to register for that separately in semester 2. We also offer many stand alone courses every semester.',
+      },
+      {
+        question: 'Can I audit these courses?',
+        answer: 'You can sit for initial classes in every course but for subsequent classes registration and payment of course fee is mandatory.',
+      },
+    ],
+  },
+  {
+    title: 'Course Fee & Finances',
+    items: [
+      {
+        question: 'What is the course fee for CTE?',
+        answer: 'CTE course fee is Rs 800 for this semester.',
+      },
+      {
+        question: 'Does CTE offer any free courses?',
+        answer: 'No, CTE does not offer any free courses but we do conduct workshops which are helpful for large number of students. These workshops are free of cost.',
+      },
+      {
+        question: 'Where does my money go?',
+        answer: 'As of now fee from courses is the only source of finance for CTE. Funds collected are used to fund projects, instructor payments, organising events and logistics related to events conducted by CTE. The members of CTE (managing committee) do not get any payments. All the financial records are mentioned in Semester report.',
+      },
+    ],
+  },
+  {
+    title: 'Registration & Deregistration',
+    items: [
+      {
+        question: 'How do I register for a course?',
+        answer: 'All registrations for CTE courses are done through this website. Sign in with your BITS Pilani email, browse the course catalog, and click "Register" on the course you want to join. The procedure for registration and fee payment would be explained during orientation or contact CTE team for any queries.',
+      },
+      {
+        question: 'How do I deregister from a course?',
+        answer: 'To deregister, go to your Dashboard, open the course you want to leave, and click the "Deregister" button. You will need to enter a 4-digit deregistration PIN provided by CTE, accept the terms and conditions (including the SWD refund checkbox if applicable), and confirm. Deregistrations are only allowed during the stipulated deregistration window at the start of the course. Course fee will be refunded to deregistered students only if done within this window.',
+      },
+      {
+        question: 'Will I get a refund after deregistering?',
+        answer: 'If you deregister within the deregistration window using the PIN provided by CTE, your course fee will be refunded. If you deregister after the window closes, the fee will not be refunded. For a refund you will have to mandatorily inform CTE.',
+      },
+      {
+        question: 'Who should I contact for deregistration?',
+        answer: 'You can contact the following people for it: Darshan: 6362612739, Prathamesh: 9892710666',
+      },
+    ],
+  },
+  {
+    title: 'AAP',
+    items: [
+      {
+        question: 'What is AAP?',
+        answer: 'AAP is Academic Assistance Program. Senior students mentor a small group of juniors in academic subjects taught in the institute. This provides a conducive environments for doubt resolution and additional helpful suggestions by seniors.',
+      },
+      {
+        question: 'How is AAP different from regular classes?',
+        answer: 'AAP is aimed at creating an informal environment for learning and doubt resolution (which for any reason whatsoever could not be done in classroom). Small groups of students would be allotted a senior student as mentor. Joining AAP would also give you access to a compilation of books, previous year papers and other study resources.',
+      },
+      {
+        question: 'What should be kept in mind before joining AAP?',
+        answer: 'AAP is for doubt resolution and would have concepts mentioned in course handouts only, it is in no way a substitute or alternative to academic courses of the institute. Not attending and being LITE in academics by considering AAP as an escape is strictly discouraged nor is it permitted. AAP is not a course and no certificate of any kind is issued to any mentee. Note that PMP mentors are entirely different from AAP mentors and are in no way related.',
+      },
+      {
+        question: 'Is there any fee for joining AAP?',
+        answer: 'AAP program is free of cost and anyone feeling the necessity can join.',
+      },
+      {
+        question: 'Is AAP available for all courses?',
+        answer: 'No, AAP is not available for all courses and depends on the availability of senior student mentors.',
+      },
+    ],
+  },
+]
+
 export default function FAQPage() {
   return (
     <div className="container">
       <h1 style={{ marginTop: '48px', marginBottom: '32px' }}>Frequently Asked Questions</h1>
-      
-      <div style={{ maxWidth: '800px' }}>
-        <div style={{
-          marginBottom: '16px',
-          padding: '28px 32px',
-          backgroundColor: '#fff',
-          borderRadius: '20px',
-          border: '1px solid #e7e5e4',
-          transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
-        }}>
-          <h3 style={{ marginTop: 0, marginBottom: '8px' }}>How do I register for a course?</h3>
-          <p style={{ margin: 0 }}>
-            Sign in with your BITS Pilani email, browse the course catalog, and click on the course you want to register for. 
-            Click the "Register" button on the course page.
-          </p>
-        </div>
 
-        <div style={{
-          marginBottom: '16px',
-          padding: '28px 32px',
-          backgroundColor: '#fff',
-          borderRadius: '20px',
-          border: '1px solid #e7e5e4',
-          transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
-        }}>
-          <h3 style={{ marginTop: 0, marginBottom: '8px' }}>Can I access courses without signing in?</h3>
-          <p style={{ margin: 0 }}>
-            You can browse the course catalog without signing in, but you need to be signed in to access course content, 
-            register for courses, and take quizzes.
-          </p>
-        </div>
-
-        <div style={{
-          marginBottom: '16px',
-          padding: '28px 32px',
-          backgroundColor: '#fff',
-          borderRadius: '20px',
-          border: '1px solid #e7e5e4',
-          transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
-        }}>
-          <h3 style={{ marginTop: 0, marginBottom: '8px' }}>What email should I use to sign in?</h3>
-          <p style={{ margin: 0 }}>
-            You must use your official BITS Pilani email address (@bits-pilani.ac.in) to sign in to the platform.
-          </p>
-        </div>
-
-        <div style={{
-          marginBottom: '16px',
-          padding: '28px 32px',
-          backgroundColor: '#fff',
-          borderRadius: '20px',
-          border: '1px solid #e7e5e4',
-          transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
-        }}>
-          <h3 style={{ marginTop: 0, marginBottom: '8px' }}>How do quizzes work?</h3>
-          <p style={{ margin: 0 }}>
-            Each course may have quizzes with different types of questions including multiple choice, numeric answers, 
-            and text responses. Your quiz attempts are saved and you can review your answers.
-          </p>
-        </div>
-
-        <div style={{
-          marginBottom: '16px',
-          padding: '28px 32px',
-          backgroundColor: '#fff',
-          borderRadius: '20px',
-          border: '1px solid #e7e5e4',
-          transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
-        }}>
-          <h3 style={{ marginTop: 0, marginBottom: '8px' }}>Who can I contact for help?</h3>
-          <p style={{ margin: 0 }}>
-            For technical support or course-related questions, please contact the Center for Technical Education at BITS Pilani Goa Campus.
-          </p>
-        </div>
+      <div style={{ maxWidth: '900px' }}>
+        {faqData.map((section) => (
+          <div key={section.title} style={{
+            marginBottom: '32px',
+            padding: '28px 32px',
+            backgroundColor: 'var(--gray-100)',
+            borderRadius: 'var(--radius-lg)',
+          }}>
+            <h2 style={{ marginTop: 0, marginBottom: '20px', fontSize: '1.6em' }}>{section.title}</h2>
+            {section.items.map((item, i) => (
+              <div key={i} style={{ marginBottom: i < section.items.length - 1 ? '20px' : 0 }}>
+                <p style={{ margin: '0 0 6px', color: 'var(--gray-500)', fontSize: '0.95em' }}>{item.question}</p>
+                <p style={{ margin: 0, color: 'var(--gray-800)', lineHeight: 1.6 }}>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   )
