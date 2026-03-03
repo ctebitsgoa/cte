@@ -352,7 +352,7 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
                       <ul>
                         {module.children.map(child => (
                           <li key={child.id}>
-                            <a onClick={() => { toggleModule(module.id); selectPage(child); }} style={{ cursor: 'pointer', color: 'var(--tealBlue)' }}>
+                            <a onClick={() => { toggleModule(module.id); selectPage(child); }} style={{ cursor: 'pointer', color: 'var(--primary)' }}>
                               {child.name}
                             </a>
                           </li>

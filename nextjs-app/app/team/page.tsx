@@ -218,7 +218,7 @@ export default function TeamPage() {
           align-items: center;
         }
         .social-icon:hover {
-          color: #5f9ea0;
+          color: var(--primary);
         }
 
         .team-group-photo {
@@ -226,11 +226,15 @@ export default function TeamPage() {
           border-radius: 14px;
           overflow: hidden;
           box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+          max-width: 700px;
+          margin-left: auto;
+          margin-right: auto;
         }
         .team-group-photo img {
           width: 100%;
           display: block;
           object-fit: cover;
+          max-height: 400px;
         }
 
         .team-empty {

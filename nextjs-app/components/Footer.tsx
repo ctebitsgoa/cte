@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer>
       <div className="container">
-        <div id="copy">&copy; CTE BPGC 2026</div>
+        <div id="copy" style={{ fontSize: '0.9em' }}>&copy; CTE BPGC 2026</div>
         <div id="social-icons">
           <a href="https://www.facebook.com/ctebpgc/" aria-label="Facebook">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">

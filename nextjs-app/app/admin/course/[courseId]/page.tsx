@@ -86,7 +86,7 @@ export default function AdminCourseViewPage({ params }: { params: Promise<{ cour
 
       // Load registered students
       const { data: registrations } = await supabase
-        .from('registrations')
+        .from('user_courses')
         .select('user_id, users(id, name, email, bits_id, phone)')
         .eq('course_id', courseId)
 
@@ -414,7 +414,7 @@ export default function AdminCourseViewPage({ params }: { params: Promise<{ cour
           margin-top: 20px;
           padding: 20px;
           background: white;
-          border: 2px dashed #5f9ea0;
+          border: 2px dashed var(--primary);
           border-radius: 10px;
           text-align: center;
         }
@@ -453,7 +453,7 @@ export default function AdminCourseViewPage({ params }: { params: Promise<{ cour
           min-width: 600px;
         }
         .students-table thead {
-          background: #5f9ea0;
+          background: var(--gray-900);
           color: white;
         }
         .students-table th {

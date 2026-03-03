@@ -31,7 +31,7 @@ export default function CourseCard({ course, isAdmin, children }: CourseCardProp
             )}
             <p style={{ marginTop: course.is_archived ? 0 : '4px' }}>{course.subtitle}</p>
             {course.instructors && course.instructors.filter((i: any) => i?.name).length > 0 && (
-              <p style={{ fontSize: '0.9em', color: 'var(--darkGray)' }}>
+              <p style={{ fontSize: '0.9em', color: 'var(--gray-500)' }}>
                 Instructors: {course.instructors.filter((i: any) => i?.name).map((i: any) => i.name).join(', ')}
               </p>
             )}
