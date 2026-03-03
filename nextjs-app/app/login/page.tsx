@@ -20,7 +20,7 @@ export default function LoginPage() {
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
-            hd: process.env.NEXT_PUBLIC_ALLOWED_EMAIL_DOMAIN || 'bits-pilani.ac.in',
+            hd: process.env.NEXT_PUBLIC_ALLOWED_EMAIL_DOMAIN || 'goa.bits-pilani.ac.in',
           },
         },
       })
