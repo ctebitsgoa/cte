@@ -185,21 +185,20 @@ export default function AdminCoursesPage() {
       <div className="courses">
         {filteredCourses.map(course => (
           <CourseCard key={course.id} course={course}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
+            <div className="admin-card-actions">
               <Link href={`/admin/course/${course.id}`}>
-                <button className="secondary" style={{ padding: '6px 12px', fontSize: '13px' }}>View</button>
+                <button className="secondary">View</button>
               </Link>
               <Link href={`/admin/courses/${course.id}`}>
-                <button className="outline" style={{ padding: '6px 12px', fontSize: '13px' }}>Edit</button>
+                <button className="outline">Edit</button>
               </Link>
               <Link href={`/admin/courses/${course.id}/students`}>
-                <button className="outline" style={{ padding: '6px 12px', fontSize: '13px' }}>
+                <button className="outline">
                   {course.student_count || 0} Students
                 </button>
               </Link>
               <button 
-                className="error"
-                style={{ padding: '6px 12px', fontSize: '13px', marginLeft: 'auto' }}
+                className="error delete-btn"
                 onClick={() => handleDeleteCourse(course.id, course.name)}
               >
                 Delete
