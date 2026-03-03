@@ -185,7 +185,7 @@ export default function AdminCoursesPage() {
       <div className="courses">
         {filteredCourses.map(course => (
           <CourseCard key={course.id} course={course}>
-            <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap', marginTop: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
               <Link href={`/admin/course/${course.id}`}>
                 <button className="secondary" style={{ padding: '6px 12px', fontSize: '13px' }}>View</button>
               </Link>
@@ -199,7 +199,7 @@ export default function AdminCoursesPage() {
               </Link>
               <button 
                 className="error"
-                style={{ padding: '6px 12px', fontSize: '13px' }}
+                style={{ padding: '6px 12px', fontSize: '13px', marginLeft: 'auto' }}
                 onClick={() => handleDeleteCourse(course.id, course.name)}
               >
                 Delete
