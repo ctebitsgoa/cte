@@ -28,11 +28,26 @@ export default function CompleteProfilePage() {
       }
 
       // Get user details from database
-      const { data: dbUser } = await supabase
+      let { data: dbUser } = await supabase
         .from('users')
         .select('*')
         .eq('id', authUser.id)
         .single()
+
+      // If user row doesn't exist yet (trigger may not have fired), create it
+      if (!dbUser) {
+        const { data: newUser } = await supabase
+          .from('users')
+          .upsert({
+            id: authUser.id,
+            email: authUser.email,
+            name: authUser.user_metadata?.full_name || '',
+            role: 'student'
+          }, { onConflict: 'id' })
+          .select()
+          .single()
+        dbUser = newUser
+      }
 
       if (dbUser) {
         // If profile is already complete, redirect to dashboard
@@ -46,6 +61,14 @@ export default function CompleteProfilePage() {
           name: dbUser.name || authUser.user_metadata?.full_name || '',
           bits_id: dbUser.bits_id || '',
           phone: dbUser.phone || ''
+        })
+      } else {
+        // Fallback: use auth user directly so form can still submit
+        setUser({ id: authUser.id, email: authUser.email })
+        setFormData({
+          name: authUser.user_metadata?.full_name || '',
+          bits_id: '',
+          phone: ''
         })
       }
 
@@ -101,13 +124,14 @@ export default function CompleteProfilePage() {
     try {
       const { error: updateError } = await supabase
         .from('users')
-        .update({
+        .upsert({
+          id: user.id,
+          email: user.email,
           name: formData.name.trim(),
           bits_id: formData.bits_id.toUpperCase().trim(),
           phone: formData.phone.trim(),
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id)
+        }, { onConflict: 'id' })
 
       if (updateError) {
         throw updateError
