@@ -1,36 +1,112 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { useState } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: any) => void
+          renderButton: (element: HTMLElement, config: any) => void
+        }
+      }
+    }
+  }
+}
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [gsiReady, setGsiReady] = useState(false)
   const router = useRouter()
   const supabase = createClient()
+  const buttonRef = useRef<HTMLDivElement>(null)
 
-  const handleGoogleSignIn = async () => {
+  const handleCredentialResponse = useCallback(async (response: any) => {
     setLoading(true)
     setError('')
 
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      // Decode JWT payload to check email domain
+      const payload = JSON.parse(atob(response.credential.split('.')[1]))
+      const email: string = payload.email || ''
+      const domain = email.split('@')[1] || ''
+
+      const allowedDomains = [
+        'goa.bits-pilani.ac.in',
+        'pilani.bits-pilani.ac.in',
+        'hyderabad.bits-pilani.ac.in',
+        'alumni.bits-pilani.ac.in',
+      ]
+
+      if (!allowedDomains.includes(domain)) {
+        setError(`Email domain @${domain} is not allowed. Please use your BITS Pilani email.`)
+        setLoading(false)
+        return
+      }
+
+      // Sign in to Supabase using the Google ID token (goes through proxy)
+      const { error: signInError } = await supabase.auth.signInWithIdToken({
         provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: {
-            hd: process.env.NEXT_PUBLIC_ALLOWED_EMAIL_DOMAIN || 'goa.bits-pilani.ac.in',
-          },
-        },
+        token: response.credential,
       })
 
-      if (error) throw error
+      if (signInError) throw signInError
+
+      // Check if profile is complete
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: dbUser } = await supabase
+          .from('users')
+          .select('phone, bits_id')
+          .eq('id', user.id)
+          .single()
+
+        if (!dbUser || !dbUser.phone || !dbUser.bits_id) {
+          router.push('/complete-profile')
+          return
+        }
+      }
+
+      router.push('/dashboard')
     } catch (err: any) {
-      setError(err.message)
+      setError(err.message || 'Sign in failed. Please try again.')
       setLoading(false)
     }
-  }
+  }, [supabase, router])
+
+  useEffect(() => {
+    // Load Google Identity Services script
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.onload = () => setGsiReady(true)
+    document.head.appendChild(script)
+
+    return () => {
+      document.head.removeChild(script)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!gsiReady || !window.google || !buttonRef.current) return
+
+    window.google.accounts.id.initialize({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+      callback: handleCredentialResponse,
+    })
+
+    window.google.accounts.id.renderButton(buttonRef.current, {
+      theme: 'outline',
+      size: 'large',
+      text: 'signin_with',
+      shape: 'pill',
+      width: 300,
+    })
+  }, [gsiReady, handleCredentialResponse])
 
   return (
     <div className="login-container">
@@ -60,17 +136,13 @@ export default function LoginPage() {
           </p>
         )}
         
-        <button
-          onClick={handleGoogleSignIn}
-          disabled={loading}
-          className="primary icon-button"
-          style={{ margin: '0 auto', padding: '12px 28px' }}
-        >
-          <span className="icon-right">{loading ? 'Signing in...' : 'Sign in with Google'}</span>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1Z" />
-          </svg>
-        </button>
+        {loading ? (
+          <p style={{ textAlign: 'center', color: 'var(--gray-500)' }}>Signing in...</p>
+        ) : (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div ref={buttonRef}></div>
+          </div>
+        )}
       </div>
       
       <p style={{ marginTop: '24px', color: 'var(--gray-500)', fontSize: '0.85em' }}>

@@ -23,11 +23,22 @@ export default {
     const response = await fetch(targetURL, {
       method: request.method,
       headers,
+      redirect: 'manual',
       body: request.method !== 'GET' && request.method !== 'HEAD'
         ? request.body
         : undefined,
     });
 
+    // For redirects (3xx), pass the Location header through directly.
+    // The browser will follow the redirect to Google, Supabase, etc.
+    if (response.status >= 300 && response.status < 400) {
+      const location = response.headers.get('Location');
+      if (location) {
+        return Response.redirect(location, response.status);
+      }
+    }
+
+    // For normal responses, add CORS headers
     const responseHeaders = new Headers(response.headers);
     responseHeaders.set('Access-Control-Allow-Origin', '*');
     responseHeaders.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
