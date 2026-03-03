@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import crypto from 'crypto'
 
 export async function POST(request: Request) {
   try {
@@ -6,24 +8,41 @@ export async function POST(request: Request) {
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 
-    // Build the Supabase OAuth authorize URL directly
-    // This is what the Supabase client SDK does internally
+    // Generate PKCE code_verifier and code_challenge
+    // This ensures Supabase returns a ?code= instead of #access_token= (implicit flow)
+    const codeVerifier = crypto.randomBytes(32).toString('base64url')
+    const codeChallenge = crypto
+      .createHash('sha256')
+      .update(codeVerifier)
+      .digest('base64url')
+
+    // Store code_verifier in the cookie that Supabase SSR client expects
+    // so exchangeCodeForSession() in the callback can find it
+    const ref = new URL(supabaseUrl).hostname.split('.')[0]
+    const cookieName = `sb-${ref}-auth-token-code-verifier`
+
+    const cookieStore = await cookies()
+    cookieStore.set(cookieName, codeVerifier, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 300, // 5 minutes
+      sameSite: 'lax',
+    })
+
+    // Build the Supabase OAuth authorize URL with PKCE params
     const params = new URLSearchParams({
       provider: 'google',
       redirect_to: redirectTo || '',
+      code_challenge: codeChallenge,
+      code_challenge_method: 'S256',
     })
 
-    if (hd) {
-      // Pass Google's hd param to restrict to a specific domain
-      // Supabase forwards query params to Google
-    }
-
-    // Call Supabase's authorize endpoint server-side to get the Google redirect URL
     const authorizeUrl = `${supabaseUrl}/auth/v1/authorize?${params.toString()}`
 
-    // Fetch it server-side to get the redirect location (Google's OAuth URL)
+    // Fetch it server-side to get the redirect Location (Google's OAuth URL)
     const res = await fetch(authorizeUrl, {
-      redirect: 'manual', // Don't follow the redirect, just get the Location header
+      redirect: 'manual',
       headers: {
         apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       },
