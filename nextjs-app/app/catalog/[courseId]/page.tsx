@@ -45,6 +45,7 @@ export default function CatalogCourseDetailPage({ params }: { params: Promise<{ 
   const [deregOtp, setDeregOtp] = useState('')
   const [deregError, setDeregError] = useState('')
   const [deregistering, setDeregistering] = useState(false)
+  const [showSignInModal, setShowSignInModal] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -125,7 +126,7 @@ export default function CatalogCourseDetailPage({ params }: { params: Promise<{ 
 
   const handleRegister = async () => {
     if (!isLoggedIn) {
-      router.push('/login')
+      setShowSignInModal(true)
       return
     }
     setShowTerms(true)
@@ -268,6 +269,28 @@ export default function CatalogCourseDetailPage({ params }: { params: Promise<{ 
           onAgree={confirmRegister}
           onClose={() => setShowTerms(false)}
         />
+      )}
+
+      {showSignInModal && (
+        <div className="modal-overlay" onClick={() => setShowSignInModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Sign In Required</h3>
+              <button className="modal-close-btn" onClick={() => setShowSignInModal(false)}>&times;</button>
+            </div>
+            <div className="modal-body" style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '48px', marginBottom: '12px' }}>🔒</div>
+              <p style={{ fontSize: '1rem', color: '#374151', marginBottom: '8px' }}>You need to sign in with your BITS Pilani Google account to register for this course.</p>
+              <p style={{ fontSize: '0.85rem', color: '#6b7280' }}>After signing in, you can register and access all course content.</p>
+            </div>
+            <div className="modal-footer" style={{ justifyContent: 'center' }}>
+              <Link href="/login">
+                <button className="primary">Sign In with Google</button>
+              </Link>
+              <button className="secondary" onClick={() => setShowSignInModal(false)}>Maybe Later</button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showDeregisterModal && (
