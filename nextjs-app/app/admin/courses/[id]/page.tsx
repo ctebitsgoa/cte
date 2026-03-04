@@ -375,6 +375,16 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
         />
 
         <div style={{ marginTop: '30px' }}>
+          <h4><b>Course Content</b></h4>
+          <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '10px' }}>
+            Manage folders, articles, PDFs, links, and quizzes for this course.
+          </p>
+          <Link href={`/admin/courses/${id}/content`}>
+            <button className="primary">Manage Content</button>
+          </Link>
+        </div>
+
+        <div style={{ marginTop: '30px' }}>
           <h4><b>Registered Students</b></h4>
           <Link href={`/admin/courses/${id}/students`}>
             <button className="secondary">View All Students</button>

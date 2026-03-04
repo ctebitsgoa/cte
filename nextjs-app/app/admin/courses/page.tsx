@@ -192,6 +192,9 @@ export default function AdminCoursesPage() {
               <Link href={`/admin/courses/${course.id}`}>
                 <button className="outline">Edit</button>
               </Link>
+              <Link href={`/admin/courses/${course.id}/content`}>
+                <button className="primary">Manage Content</button>
+              </Link>
               <Link href={`/admin/courses/${course.id}/students`}>
                 <button className="outline">
                   {course.student_count || 0} Students

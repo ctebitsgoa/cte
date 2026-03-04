@@ -27,7 +27,7 @@ export async function POST(
   }
 
   const body = await request.json()
-  const { type, name, parent_id, index, doc, description } = body
+  const { type, name, parent_id, index, doc, description, url } = body
 
   const pageData: any = {
     name,
@@ -41,6 +41,8 @@ export async function POST(
     pageData.doc = doc || ''
   } else if (type === 'Quiz') {
     pageData.description = description || ''
+  } else if (type === 'PDF' || type === 'Link') {
+    pageData.url = url || ''
   }
 
   const { data: page, error } = await supabase

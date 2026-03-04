@@ -169,6 +169,9 @@ export default function AdminCourseViewPage({ params }: { params: Promise<{ cour
           <Link href={`/admin/courses/${courseId}`}>
             <button className="secondary">Edit</button>
           </Link>
+          <Link href={`/admin/courses/${courseId}/content`}>
+            <button className="primary">Manage Content</button>
+          </Link>
           <button 
             className="error"
             onClick={async () => {

@@ -9,11 +9,12 @@ import Loading from '@/components/Loading'
 interface CoursePage {
   id: string
   name: string
-  type: 'Module' | 'Article' | 'Quiz'
+  type: 'Module' | 'Article' | 'Quiz' | 'PDF' | 'Link'
   course_id: string
   parent_id: string | null
   index: number
   doc: string | null
+  url: string | null
 }
 
 interface Instructor {
@@ -224,6 +225,19 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
                             <line x1="12" y1="17" x2="12.01" y2="17"/>
                           </svg>
+                        ) : child.type === 'PDF' ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="12" y1="18" x2="12" y2="12"/>
+                            <line x1="9" y1="15" x2="12" y2="12"/>
+                            <line x1="15" y1="15" x2="12" y2="12"/>
+                          </svg>
+                        ) : child.type === 'Link' ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                          </svg>
                         ) : (
                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -302,7 +316,7 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
                       className={`student-child-btn ${selectedPage?.id === child.id ? 'active' : ''}`}
                       onClick={() => selectPage(child)}
                     >
-                      {child.type === 'Quiz' ? '📝' : '📄'} {child.name}
+                      {child.type === 'Quiz' ? '📝' : child.type === 'PDF' ? '📎' : child.type === 'Link' ? '🔗' : '📄'} {child.name}
                     </button>
                   ))}
                   {module.children.length === 0 && (
@@ -329,6 +343,51 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
                 <Link href={`/dashboard/course/${courseId}/quiz/${selectedPage.id}`}>
                   <button className="primary">Start Quiz</button>
                 </Link>
+              </div>
+            ) : selectedPage.type === 'PDF' && selectedPage.url ? (
+              <div className="pdf-content">
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                  <a href={selectedPage.url} target="_blank" rel="noopener noreferrer">
+                    <button className="primary" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
+                      </svg>
+                      Open PDF
+                    </button>
+                  </a>
+                  <a href={selectedPage.url} download>
+                    <button className="secondary" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
+                      Download
+                    </button>
+                  </a>
+                </div>
+                <iframe
+                  src={selectedPage.url}
+                  style={{ width: '100%', height: '80vh', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                  title={selectedPage.name}
+                />
+              </div>
+            ) : selectedPage.type === 'Link' && selectedPage.url ? (
+              <div className="link-content">
+                <p style={{ marginBottom: '15px', color: '#6b7280' }}>{selectedPage.doc || 'External resource'}</p>
+                <a href={selectedPage.url} target="_blank" rel="noopener noreferrer">
+                  <button className="primary" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                      <polyline points="15 3 21 3 21 9"/>
+                      <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                    Open Link
+                  </button>
+                </a>
+                <p style={{ marginTop: '10px', fontSize: '13px', color: '#9ca3af', wordBreak: 'break-all' }}>{selectedPage.url}</p>
               </div>
             ) : (
               <p>No content available</p>
