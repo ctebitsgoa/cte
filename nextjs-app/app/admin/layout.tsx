@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 export default function AdminLayout({
@@ -12,6 +13,7 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname()
   const router = useRouter()
+  const supabase = createClient()
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null)
 
   // Check if we're on the base /admin route
@@ -19,30 +21,29 @@ export default function AdminLayout({
 
   useEffect(() => {
     const checkAdmin = async () => {
-      try {
-        // Use server-side API to check auth (avoids proxy issues)
-        const response = await fetch('/api/auth/me')
-        const data = await response.json()
-
-        if (!data.authenticated || !data.user) {
-          router.push('/login?redirect_to=' + encodeURIComponent(pathname))
-          return
-        }
-
-        if (data.user.role !== 'admin') {
-          setIsAdmin(false)
-          return
-        }
-
-        setIsAdmin(true)
-      } catch (error) {
-        console.error('Admin check failed:', error)
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      
+      if (!authUser) {
         router.push('/login?redirect_to=' + encodeURIComponent(pathname))
+        return
       }
+
+      const { data: dbUser } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', authUser.id)
+        .single()
+
+      if (!dbUser || dbUser.role !== 'admin') {
+        setIsAdmin(false)
+        return
+      }
+
+      setIsAdmin(true)
     }
 
     checkAdmin()
-  }, [router, pathname])
+  }, [router, supabase, pathname])
 
   // Loading state
   if (isAdmin === null) {

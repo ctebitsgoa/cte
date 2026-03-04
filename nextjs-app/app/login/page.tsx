@@ -1,5 +1,6 @@
 'use client'
 
+import { createClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
@@ -8,35 +9,27 @@ function LoginContent() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const searchParams = useSearchParams()
+  const supabase = createClient()
 
   const handleGoogleSignIn = async () => {
     setLoading(true)
     setError('')
 
     try {
-      // Ask our server-side API route to generate the Google OAuth URL
-      // The server calls Supabase directly (Vercel → Supabase is never blocked)
       const origin = window.location.origin
-      // Pass the redirect_to param so after login we go back to where the user was
       const redirectTo = searchParams.get('redirect_to') || '/dashboard'
-      const res = await fetch('/api/auth/google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+
+      const { error: signInError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
           redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
-          hd: 'goa.bits-pilani.ac.in',
-        }),
+          queryParams: {
+            hd: 'goa.bits-pilani.ac.in',
+          },
+        },
       })
 
-      const data = await res.json()
-
-      if (!res.ok || data.error) {
-        throw new Error(data.error || 'Failed to start sign in')
-      }
-
-      // Redirect the browser directly to Google's OAuth page
-      // This URL goes browser → Google (not blocked) → callback
-      window.location.href = data.url
+      if (signInError) throw signInError
     } catch (err: any) {
       setError(err.message || 'Sign in failed. Please try again.')
       setLoading(false)
