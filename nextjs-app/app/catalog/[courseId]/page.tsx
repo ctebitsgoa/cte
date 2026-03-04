@@ -95,26 +95,28 @@ export default function CatalogCourseDetailPage({ params }: { params: Promise<{ 
           if (regData.deregistration_enabled !== undefined) {
             setCourse(prev => prev ? { ...prev, deregistration_enabled: regData.deregistration_enabled } : prev)
           }
-        }
-      }
 
-      // Load handout (course pages - modules)
-      const { data: pages } = await supabase
-        .from('course_pages')
-        .select('id, name, type, parent_id, index')
-        .eq('course_id', courseId)
-        .order('index', { ascending: true })
+          // Load course content only for registered users
+          if (regData.registered) {
+            const { data: pages } = await supabase
+              .from('course_pages')
+              .select('id, name, type, parent_id, index')
+              .eq('course_id', courseId)
+              .order('index', { ascending: true })
 
-      if (pages && pages.length > 0) {
-        const modules = pages.filter(p => p.type === 'Module')
-        const organized: HandoutItem[] = modules.map(mod => ({
-          id: mod.id,
-          name: mod.name,
-          type: mod.type,
-          children: pages.filter(p => p.parent_id === mod.id).sort((a, b) => a.index - b.index)
-        }))
-        if (organized.length > 0) {
-          setHandout(organized)
+            if (pages && pages.length > 0) {
+              const modules = pages.filter(p => p.type === 'Module')
+              const organized: HandoutItem[] = modules.map(mod => ({
+                id: mod.id,
+                name: mod.name,
+                type: mod.type,
+                children: pages.filter(p => p.parent_id === mod.id).sort((a, b) => a.index - b.index)
+              }))
+              if (organized.length > 0) {
+                setHandout(organized)
+              }
+            }
+          }
         }
       }
 
@@ -237,7 +239,7 @@ export default function CatalogCourseDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      {handout && handout.length > 0 && (
+      {isRegistered && handout && handout.length > 0 && (
         <div className="handout-section container">
           <h2>Topics</h2>
           <div className="handout-items">

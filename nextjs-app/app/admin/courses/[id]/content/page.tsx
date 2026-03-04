@@ -9,7 +9,7 @@ import Loading from '@/components/Loading'
 interface CoursePage {
   id: string
   name: string
-  type: 'Module' | 'Article' | 'Quiz' | 'PDF' | 'Link'
+  type: 'Module' | 'Article' | 'PDF' | 'Link'
   course_id: string
   parent_id: string | null
   index: number
@@ -41,6 +41,7 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
   const [newModuleName, setNewModuleName] = useState('')
   const [showAddModule, setShowAddModule] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [savedPageId, setSavedPageId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const supabase = createClient()
@@ -154,7 +155,6 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
     if (selectedPage.type === 'Article') body.doc = editDoc
     if (selectedPage.type === 'PDF') body.url = editUrl
     if (selectedPage.type === 'Link') body.url = editUrl
-    if (selectedPage.type === 'Quiz') body.description = editDescription
     if (selectedPage.type === 'Module') body.name = editName
 
     const res = await fetch(`/api/admin/courses/${courseId}/pages/${selectedPage.id}`, {
@@ -168,6 +168,9 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
       // Re-select with updated data
       const updated = { ...selectedPage, ...body }
       setSelectedPage(updated)
+      // Show saved indicator
+      setSavedPageId(selectedPage.id)
+      setTimeout(() => setSavedPageId(null), 2500)
     }
     setSaving(false)
   }
@@ -224,7 +227,6 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
       case 'Article': return '📄'
       case 'PDF': return '📎'
       case 'Link': return '🔗'
-      case 'Quiz': return '📝'
       default: return '📄'
     }
   }
@@ -265,7 +267,11 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
                   <span onClick={() => selectPage(module)} style={{ flex: 1, cursor: 'pointer' }}>
                     📁 {module.name}
                   </span>
-                  <button onClick={(e) => handleDelete(module.id, e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '2px 4px', fontSize: '14px' }} title="Delete folder">✕</button>
+                  {savedPageId === module.id ? (
+                    <span style={{ color: '#16a34a', padding: '2px 4px', fontSize: '14px', fontWeight: 700 }} title="Saved!">✓</span>
+                  ) : (
+                    <button onClick={(e) => handleDelete(module.id, e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '2px 4px', fontSize: '14px' }} title="Delete folder">✕</button>
+                  )}
                 </div>
 
                 {/* Children */}
@@ -285,7 +291,11 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
                         <span style={{ marginRight: '6px' }}>{typeIcon(child.type)}</span>
                         <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.name}</span>
                         <span style={{ color: '#9ca3af', fontSize: '0.75em', marginRight: '8px' }}>{child.type}</span>
-                        <button onClick={(e) => handleDelete(child.id, e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '2px 4px', fontSize: '12px' }} title="Delete">✕</button>
+                        {savedPageId === child.id ? (
+                          <span style={{ color: '#16a34a', padding: '2px 4px', fontSize: '12px', fontWeight: 700 }} title="Saved!">✓</span>
+                        ) : (
+                          <button onClick={(e) => handleDelete(child.id, e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '2px 4px', fontSize: '12px' }} title="Delete">✕</button>
+                        )}
                       </div>
                     ))}
 
@@ -297,7 +307,6 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
                             <option value="Article">Article</option>
                             <option value="PDF">PDF</option>
                             <option value="Link">Link</option>
-                            <option value="Quiz">Quiz</option>
                           </select>
                           <input
                             type="text"
@@ -361,13 +370,13 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
                   padding: '4px 12px', borderRadius: '999px', fontSize: '0.8em', fontWeight: 600,
-                  background: selectedPage.type === 'Module' ? '#dbeafe' : selectedPage.type === 'Article' ? '#d1fae5' : selectedPage.type === 'PDF' ? '#fef3c7' : selectedPage.type === 'Link' ? '#ede9fe' : '#fce7f3',
-                  color: selectedPage.type === 'Module' ? '#1e40af' : selectedPage.type === 'Article' ? '#065f46' : selectedPage.type === 'PDF' ? '#92400e' : selectedPage.type === 'Link' ? '#5b21b6' : '#9d174d',
+                  background: selectedPage.type === 'Module' ? '#dbeafe' : selectedPage.type === 'Article' ? '#d1fae5' : selectedPage.type === 'PDF' ? '#fef3c7' : '#ede9fe',
+                  color: selectedPage.type === 'Module' ? '#1e40af' : selectedPage.type === 'Article' ? '#065f46' : selectedPage.type === 'PDF' ? '#92400e' : '#5b21b6',
                 }}>
                   {typeIcon(selectedPage.type)} {selectedPage.type}
                 </span>
                 <button onClick={handleSave} className="primary" disabled={saving} style={{ fontSize: '13px' }}>
-                  {saving ? 'Saving...' : 'Save Changes'}
+                  {saving ? 'Saving...' : savedPageId === selectedPage.id ? '✓ Saved' : 'Save Changes'}
                 </button>
               </div>
 
@@ -461,22 +470,6 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
                       🔗 Open link in new tab →
                     </a>
                   )}
-                </>
-              )}
-
-              {/* Quiz editor */}
-              {selectedPage.type === 'Quiz' && (
-                <>
-                  <label style={{ fontWeight: 600, fontSize: '0.85em', color: '#374151', display: 'block', marginBottom: '4px' }}>Description</label>
-                  <textarea
-                    value={editDescription}
-                    onChange={e => setEditDescription(e.target.value)}
-                    placeholder="Quiz description..."
-                    style={{ width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '14px', minHeight: '100px', resize: 'vertical' }}
-                  />
-                  <p style={{ fontSize: '0.8em', color: '#6b7280', marginTop: '8px' }}>
-                    To manage quiz questions, go to the quiz editor from the course admin page.
-                  </p>
                 </>
               )}
 

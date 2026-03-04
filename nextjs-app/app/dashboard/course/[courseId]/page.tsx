@@ -445,32 +445,6 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
               <p style={{ whiteSpace: 'pre-wrap' }}>{course.description}</p>
             </div>
 
-            {/* Topics/Modules Overview */}
-            {modules.length > 0 && (
-              <div className="course-topics">
-                <h3>Topics</h3>
-                <div className="topics-grid">
-                  {modules.map(module => (
-                    <div key={module.id} className="topic-card">
-                      <h4>{module.name}</h4>
-                      <ul>
-                        {module.children.map(child => (
-                          <li key={child.id}>
-                            <a onClick={() => { toggleModule(module.id); selectPage(child); }} style={{ cursor: 'pointer', color: 'var(--primary)' }}>
-                              {child.name}
-                            </a>
-                          </li>
-                        ))}
-                        {module.children.length === 0 && (
-                          <li style={{ color: '#999' }}>No content yet</li>
-                        )}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <style jsx>{`
               .course-details-view {
                 max-width: 900px;

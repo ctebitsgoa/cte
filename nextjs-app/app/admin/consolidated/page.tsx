@@ -117,6 +117,7 @@ export default function ConsolidatedSheetPage() {
 
   const filteredStudents = students.filter(s =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.bits_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.phone.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -184,7 +185,7 @@ export default function ConsolidatedSheetPage() {
             <div className="search-bar">
               <input
                 type="text"
-                placeholder="Search by name, BITS ID, or phone..."
+                placeholder="Search by name, email, BITS ID, or phone..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -198,6 +199,7 @@ export default function ConsolidatedSheetPage() {
                   <tr>
                     <th>#</th>
                     <th>Student ID</th>
+                    <th>Email</th>
                     <th>Phone</th>
                     <th>Student Name</th>
                     <th>Courses Enrolled</th>
@@ -208,6 +210,7 @@ export default function ConsolidatedSheetPage() {
                     <tr key={student.bits_id || student.email}>
                       <td>{index + 1}</td>
                       <td>{student.bits_id || '-'}</td>
+                      <td>{student.email || '-'}</td>
                       <td>{student.phone || '-'}</td>
                       <td>{student.name}</td>
                       <td>

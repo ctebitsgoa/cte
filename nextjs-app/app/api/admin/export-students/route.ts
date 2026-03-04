@@ -100,7 +100,7 @@ export async function POST(request: Request) {
   }
 
   // Build CSV
-  const csvHeader = 'Student ID,Phone,Name,Courses'
+const csvHeader = 'Student ID,Email,Phone,Name,Courses'
   const csvRows = Object.values(studentMap)
     .sort((a, b) => a.name.localeCompare(b.name))
     .map(student => {
@@ -112,6 +112,7 @@ export async function POST(request: Request) {
       }
       return [
         escapeCsv(student.bits_id),
+        escapeCsv(student.email),
         escapeCsv(student.phone),
         escapeCsv(student.name),
         escapeCsv(student.courses.join('; ')),
