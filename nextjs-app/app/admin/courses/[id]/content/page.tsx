@@ -270,7 +270,9 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
                   {savedPageId === module.id ? (
                     <span style={{ color: '#16a34a', padding: '2px 4px', fontSize: '14px', fontWeight: 700 }} title="Saved!">✓</span>
                   ) : (
-                    <button onClick={(e) => handleDelete(module.id, e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '2px 4px', fontSize: '14px' }} title="Delete folder">✕</button>
+                    <button onClick={(e) => handleDelete(module.id, e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '2px 6px', fontSize: '13px', opacity: 0.6, transition: 'opacity 0.15s' }} title="Delete folder" onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.6'}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
                   )}
                 </div>
 
@@ -294,7 +296,9 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
                         {savedPageId === child.id ? (
                           <span style={{ color: '#16a34a', padding: '2px 4px', fontSize: '12px', fontWeight: 700 }} title="Saved!">✓</span>
                         ) : (
-                          <button onClick={(e) => handleDelete(child.id, e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '2px 4px', fontSize: '12px' }} title="Delete">✕</button>
+                          <button onClick={(e) => { e.stopPropagation(); handleDelete(child.id, e); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '2px 6px', fontSize: '12px', opacity: 0.5, transition: 'opacity 0.15s' }} title="Delete" onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.5'}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                          </button>
                         )}
                       </div>
                     ))}
@@ -479,6 +483,18 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
                   This is a folder. Add content inside it using the &quot;+ Add content&quot; button in the sidebar.
                 </p>
               )}
+
+              {/* Delete button */}
+              <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #e5e7eb' }}>
+                <button
+                  onClick={() => handleDelete(selectedPage.id)}
+                  className="error"
+                  style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  Delete {selectedPage.type === 'Module' ? 'Folder' : selectedPage.type}
+                </button>
+              </div>
             </div>
           ) : (
             <div style={{ textAlign: 'center', padding: '80px 20px', color: '#9ca3af' }}>
