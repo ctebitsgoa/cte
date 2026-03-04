@@ -39,9 +39,11 @@ export async function updateSession(request: NextRequest) {
   ) || request.nextUrl.pathname === '/'
 
   if (!user && !isPublicRoute) {
-    // no user, redirect to login page
+    // no user, redirect to login page with redirect_to param
     const url = request.nextUrl.clone()
+    const redirectTo = request.nextUrl.pathname + request.nextUrl.search
     url.pathname = '/login'
+    url.searchParams.set('redirect_to', redirectTo)
     return NextResponse.redirect(url)
   }
 

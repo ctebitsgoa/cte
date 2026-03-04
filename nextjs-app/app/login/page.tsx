@@ -1,10 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
-export default function LoginPage() {
+function LoginContent() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const searchParams = useSearchParams()
 
   const handleGoogleSignIn = async () => {
     setLoading(true)
@@ -14,11 +17,13 @@ export default function LoginPage() {
       // Ask our server-side API route to generate the Google OAuth URL
       // The server calls Supabase directly (Vercel → Supabase is never blocked)
       const origin = window.location.origin
+      // Pass the redirect_to param so after login we go back to where the user was
+      const redirectTo = searchParams.get('redirect_to') || '/dashboard'
       const res = await fetch('/api/auth/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          redirectTo: `${origin}/auth/callback`,
+          redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
           hd: 'goa.bits-pilani.ac.in',
         }),
       })
@@ -100,14 +105,23 @@ export default function LoginPage() {
       </div>
       
       <p style={{ marginTop: '24px', color: 'var(--gray-500)', fontSize: '0.85em' }}>
-        Allowed email domains:
+        Only @goa.bits-pilani.ac.in emails are allowed.
       </p>
-      <ul style={{ textAlign: 'left', display: 'inline-block', margin: '8px 0', fontSize: '0.85em', color: 'var(--gray-500)' }}>
-        <li>@goa.bits-pilani.ac.in</li>
-        <li>@pilani.bits-pilani.ac.in</li>
-        <li>@hyderabad.bits-pilani.ac.in</li>
-        <li>@alumni.bits-pilani.ac.in</li>
-      </ul>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="login-container">
+        <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '48px 36px', border: '1px solid #e7e5e4' }}>
+          <h1>Welcome</h1>
+          <p>Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }

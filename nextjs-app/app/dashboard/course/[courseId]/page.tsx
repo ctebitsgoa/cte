@@ -180,7 +180,8 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
 
   return (
     <div className="course-main">
-      {/* Sidebar */}
+      {/* Sidebar - only for admin, students get a floating back button */}
+      {isAdmin ? (
       <div className="course-sidebar">
         <div className="course-sidebar-header">
           <Link href="/dashboard" className="back-link">
@@ -270,6 +271,50 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
           </div>
         )}
       </div>
+      ) : (
+      /* Student: no sidebar, just a top bar with back button and module navigation */
+      <div className="student-sidebar">
+        <div className="student-sidebar-header">
+          <Link href="/dashboard" className="student-back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Dashboard
+          </Link>
+        </div>
+        <nav className="student-modules">
+          {modules.map(module => (
+            <div key={module.id} className="student-module">
+              <button
+                className={`student-module-btn ${module.isOpen ? 'open' : ''}`}
+                onClick={() => toggleModule(module.id)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: module.isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+                {module.name}
+              </button>
+              {module.isOpen && (
+                <div className="student-module-children">
+                  {module.children.map(child => (
+                    <button
+                      key={child.id}
+                      className={`student-child-btn ${selectedPage?.id === child.id ? 'active' : ''}`}
+                      onClick={() => selectPage(child)}
+                    >
+                      {child.type === 'Quiz' ? '📝' : '📄'} {child.name}
+                    </button>
+                  ))}
+                  {module.children.length === 0 && (
+                    <span className="student-no-content">No content yet</span>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </nav>
+      </div>
+      )}
 
       {/* Main Content */}
       <div className="course-content">

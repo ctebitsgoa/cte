@@ -755,7 +755,42 @@ footer { margin-top: auto; }
 
 .quiz-content { text-align: center; padding: 48px; }
 
+/* Student sidebar (light, simpler) */
+.student-sidebar {
+  background: #f9fafb; border-right: 1px solid #e5e7eb;
+  flex-basis: 280px; min-width: 280px; display: flex; flex-direction: column;
+  overflow-y: auto; user-select: none;
+}
+.student-sidebar-header {
+  padding: 14px 16px; border-bottom: 1px solid #e5e7eb;
+}
+.student-back-btn {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--primaryColor); text-decoration: none; font-weight: 500; font-size: 0.9em;
+  padding: 8px 12px; border-radius: 8px; transition: background 0.15s;
+}
+.student-back-btn:hover { background: rgba(22,163,74,0.08); text-decoration: none; }
+.student-modules { padding: 8px 0; }
+.student-module { border-bottom: 1px solid #e5e7eb; }
+.student-module-btn {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+  padding: 12px 16px; border: none; background: none; cursor: pointer;
+  font-weight: 600; font-size: 0.9em; color: #374151; transition: background 0.15s;
+}
+.student-module-btn:hover { background: #f3f4f6; }
+.student-module-btn.open { color: var(--primaryColor); }
+.student-module-children { padding: 2px 0 8px; }
+.student-child-btn {
+  display: flex; align-items: center; gap: 6px; width: 100%; text-align: left;
+  padding: 8px 16px 8px 36px; border: none; background: none; cursor: pointer;
+  font-size: 0.85em; color: #6b7280; transition: all 0.15s;
+}
+.student-child-btn:hover { background: #f3f4f6; color: #111827; }
+.student-child-btn.active { background: rgba(22,163,74,0.08); color: var(--primaryColor); font-weight: 500; }
+.student-no-content { display: block; padding: 8px 16px 8px 36px; font-size: 0.85em; color: #9ca3af; }
+
 @media (max-width: 768px) {
   .course-sidebar { flex-basis: 100%; width: 100%; }
+  .student-sidebar { flex-basis: 100%; width: 100%; }
   .course-content { padding: 20px; }
 }
