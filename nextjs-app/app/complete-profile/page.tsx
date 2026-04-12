@@ -8,6 +8,7 @@ import Loading from '@/components/Loading'
 export default function CompleteProfilePage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [success, setSuccess] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [formData, setFormData] = useState({
     name: '',
@@ -137,7 +138,15 @@ export default function CompleteProfilePage() {
         throw updateError
       }
 
-      router.push('/dashboard')
+      // Show success state
+      setSuccess(true)
+      setSaving(false)
+
+      // Small delay to show success message, then navigate
+      setTimeout(() => {
+        // Use window.location for reliable full page navigation
+        window.location.href = '/dashboard'
+      }, 500)
     } catch (err: any) {
       setError(err.message || 'Failed to update profile')
       setSaving(false)
@@ -145,6 +154,36 @@ export default function CompleteProfilePage() {
   }
 
   if (loading) return <Loading />
+
+  // Show success state
+  if (success) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        minHeight: '60vh',
+        gap: '20px'
+      }}>
+        <div style={{
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          backgroundColor: '#10b981',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h2 style={{ margin: 0, color: '#333' }}>Profile Complete!</h2>
+        <p style={{ margin: 0, color: '#666' }}>Redirecting to dashboard...</p>
+      </div>
+    )
+  }
 
   return (
     <>
