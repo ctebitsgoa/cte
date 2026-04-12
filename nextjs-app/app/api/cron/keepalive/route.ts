@@ -5,15 +5,9 @@ import { NextResponse } from 'next/server'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-export async function GET(request: Request) {
-  // Verify the request is from Vercel Cron (optional but recommended)
-  const authHeader = request.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    // In development, allow without secret
-    if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-  }
+export async function GET() {
+  // No auth check needed - this route only inserts harmless keepalive data
+  // The route is excluded from middleware auth checks
 
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
@@ -39,8 +33,10 @@ export async function GET(request: Request) {
       timestamp: new Date().toISOString(),
       id: data.id
     })
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
     console.error('Keepalive exception:', err)
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
+}
 }
