@@ -257,6 +257,8 @@ export default function CompleteProfilePage() {
           @media screen and (max-width: 640px) {
             .complete-profile-page {
               flex-direction: column;
+              min-height: auto;
+              overflow-y: auto;
             }
           }
 
@@ -295,8 +297,12 @@ export default function CompleteProfilePage() {
 
           @media screen and (max-width: 640px) {
             .welcome-aside {
-              flex-basis: 100%;
-              min-height: 300px;
+              flex-basis: auto;
+              min-height: 200px;
+              padding: 30px 20px;
+            }
+            .welcome-aside h1 {
+              font-size: 2rem;
             }
           }
 
@@ -317,8 +323,8 @@ export default function CompleteProfilePage() {
 
           @media screen and (max-width: 640px) {
             .form-section {
-              flex-basis: 100%;
-              padding: 40px 20px;
+              flex-basis: auto;
+              padding: 30px 20px 60px 20px;
             }
           }
 

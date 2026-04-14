@@ -55,7 +55,8 @@ export async function updateSession(request: NextRequest) {
       .eq('id', user.id)
       .single()
 
-    if (dbUser && (!dbUser.phone || !dbUser.bits_id)) {
+    // Redirect if user has no profile OR profile is incomplete
+    if (!dbUser || !dbUser.phone || !dbUser.bits_id) {
       const url = request.nextUrl.clone()
       url.pathname = '/complete-profile'
       return NextResponse.redirect(url)

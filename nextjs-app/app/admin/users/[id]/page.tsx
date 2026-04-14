@@ -55,23 +55,6 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
     loadData()
   }, [id, router, supabase])
 
-  const handleRoleChange = async () => {
-    if (!user) return
-
-    const newRole = user.role === 'admin' ? 'student' : 'admin'
-    
-    const { error } = await supabase
-      .from('users')
-      .update({ role: newRole })
-      .eq('id', user.id)
-
-    if (error) {
-      alert('Error updating access level: ' + error.message)
-    } else {
-      setUser({ ...user, role: newRole })
-    }
-  }
-
   const handleDeregister = async (courseName: string, courseId: string) => {
     if (!user) return
     
@@ -112,9 +95,6 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
           {user.phone && <p>{user.phone}</p>}
           <p className="role-line">
             {capitalizeRole(user.role)}
-            <a onClick={handleRoleChange}>
-              {user.role === 'student' ? 'Upgrade to Admin' : 'Downgrade to Student'}
-            </a>
           </p>
         </div>
 

@@ -369,7 +369,7 @@ footer #copy { font-size: 0.88em; }
    ============================================================ */
 .app-loading { filter: blur(5px); }
 #app { display: flex; flex-direction: column; }
-#app-container, #app { height: 100%; }
+#app-container, #app { min-height: 100%; }
 
 /* ============================================================
    Normalize
