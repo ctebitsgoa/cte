@@ -103,7 +103,7 @@ const faqData: FAQSection[] = [
       },
       {
         question: 'Who should I contact for deregistration?',
-        answer: 'You can contact the following people for it: Darshan: 6362612739, Prathamesh: 9892710666',
+        answer: 'You can contact us at ic.cte@goa.bits-pilani.ac.in',
       },
     ],
   },

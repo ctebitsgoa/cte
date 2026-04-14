@@ -20,6 +20,7 @@ interface Course {
   handout: string | null
   cover_image: string
   is_archived: boolean
+  registration_open: boolean
   instructors?: Instructor[]
 }
 
@@ -36,6 +37,8 @@ export default function AdminCourseViewPage({ params }: { params: Promise<{ cour
   const [loading, setLoading] = useState(true)
   const [course, setCourse] = useState<Course | null>(null)
   const [registeredStudents, setRegisteredStudents] = useState<RegisteredStudent[]>([])
+  const [regOpen, setRegOpen] = useState(false)
+  const [regLoading, setRegLoading] = useState(false)
   const [deregEnabled, setDeregEnabled] = useState(false)
   const [deregOtp, setDeregOtp] = useState<string | null>(null)
   const [deregLoading, setDeregLoading] = useState(false)
@@ -83,6 +86,7 @@ export default function AdminCourseViewPage({ params }: { params: Promise<{ cour
 
       const instructors = instructorData?.map((i: any) => i.users).filter(Boolean) || []
       setCourse({ ...courseData, instructors })
+      setRegOpen(courseData.registration_open || false)
 
       // Load registered students
       const { data: registrations } = await supabase
@@ -117,6 +121,30 @@ export default function AdminCourseViewPage({ params }: { params: Promise<{ cour
 
   if (loading) return <Loading />
   if (!course) return null
+
+  const toggleRegistration = async () => {
+    const newStatus = !regOpen
+    const confirmMsg = newStatus
+      ? 'Open registration for this course? Students will be able to register.'
+      : 'Close registration for this course? Students will no longer be able to register.'
+    if (!confirm(confirmMsg)) return
+
+    setRegLoading(true)
+    try {
+      const { error } = await supabase
+        .from('courses')
+        .update({ registration_open: newStatus })
+        .eq('id', courseId)
+      
+      if (error) throw error
+      setRegOpen(newStatus)
+      setCourse({ ...course, registration_open: newStatus })
+    } catch (e: any) {
+      alert('Error toggling registration: ' + (e.message || 'Unknown error'))
+    } finally {
+      setRegLoading(false)
+    }
+  }
 
   const toggleDeregistration = async () => {
     const action = deregEnabled ? 'close' : 'open'
@@ -239,6 +267,34 @@ export default function AdminCourseViewPage({ params }: { params: Promise<{ cour
           </a>
         </div>
       )}
+
+      {/* Registration Controls */}
+      <div className="reg-section">
+        <h3>Registration</h3>
+        <div className="reg-controls">
+          <div className="reg-status">
+            <span className={`reg-badge ${regOpen ? 'open' : 'closed'}`}>
+              {regOpen ? 'Open' : 'Closed'}
+            </span>
+            <p className="reg-description">
+              {regOpen
+                ? 'Students can register for this course.'
+                : 'Registration is currently closed for this course.'}
+            </p>
+          </div>
+          <button
+            className={regOpen ? 'error' : 'primary'}
+            onClick={toggleRegistration}
+            disabled={regLoading}
+          >
+            {regLoading
+              ? 'Processing...'
+              : regOpen
+                ? 'Close Registration'
+                : 'Open Registration'}
+          </button>
+        </div>
+      </div>
 
       {/* Deregistration Controls */}
       <div className="dereg-section">
@@ -441,6 +497,53 @@ export default function AdminCourseViewPage({ params }: { params: Promise<{ cour
           margin: 8px 0 0 0;
           font-size: 0.85rem;
           color: #9ca3af;
+        }
+        .reg-section {
+          margin-top: 40px;
+          padding: 24px;
+          background: #f0f9ff;
+          border: 1px solid #bae6fd;
+          border-radius: 12px;
+        }
+        .reg-section h3 {
+          font-size: 1.2rem;
+          font-weight: 600;
+          margin: 0 0 16px 0;
+        }
+        .reg-controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 20px;
+          flex-wrap: wrap;
+        }
+        .reg-status {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        .reg-badge {
+          display: inline-block;
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        .reg-badge.open {
+          background: #dcfce7;
+          color: #166534;
+        }
+        .reg-badge.closed {
+          background: #fef2f2;
+          color: #991b1b;
+        }
+        .reg-description {
+          margin: 0;
+          color: #4b5563;
+          font-size: 0.95rem;
         }
         .students-section h3 {
           font-size: 1.2rem;

@@ -23,6 +23,7 @@ interface Course {
   is_archived: boolean
   instructors?: Instructor[]
   deregistration_enabled?: boolean
+  registration_open?: boolean
 }
 
 interface HandoutItem {
@@ -221,6 +222,11 @@ export default function CatalogCourseDetailPage({ params }: { params: Promise<{ 
                     </button>
                   )}
                 </>
+              ) : course.registration_open === false ? (
+                <div className="registration-closed">
+                  <span className="closed-badge">Registration Closed</span>
+                  <p className="closed-message">This course is not currently open for registration.</p>
+                </div>
               ) : (
                 <button className="primary" onClick={handleRegister} disabled={registering}>
                   {registering ? 'Registering...' : 'Register'}
@@ -361,6 +367,23 @@ export default function CatalogCourseDetailPage({ params }: { params: Promise<{ 
           gap: 12px;
           margin-top: 20px;
           flex-wrap: wrap;
+        }
+        .registration-closed {
+          margin-top: 8px;
+        }
+        .closed-badge {
+          display: inline-block;
+          background: #fef2f2;
+          color: #991b1b;
+          padding: 6px 14px;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          font-weight: 600;
+        }
+        .closed-message {
+          margin: 10px 0 0 0;
+          color: #6b7280;
+          font-size: 0.9rem;
         }
         .course-detail-image img {
           max-width: 350px;

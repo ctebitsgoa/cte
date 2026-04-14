@@ -17,6 +17,7 @@ export interface Course {
   handout?: string
   cover_image: string
   is_archived: boolean
+  registration_open?: boolean
   deregistration_enabled?: boolean
   deregistration_otp?: string
   created_at: string

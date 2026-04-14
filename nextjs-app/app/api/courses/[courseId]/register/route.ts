@@ -16,6 +16,21 @@ export async function POST(
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
+  // Check if course exists and registration is open
+  const { data: course } = await supabase
+    .from('courses')
+    .select('id, registration_open')
+    .eq('id', courseId)
+    .single()
+
+  if (!course) {
+    return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+  }
+
+  if (course.registration_open === false) {
+    return NextResponse.json({ error: 'Registration is closed for this course' }, { status: 403 })
+  }
+
   // Check if already registered
   const { data: existing } = await supabase
     .from('user_courses')
