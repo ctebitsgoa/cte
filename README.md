@@ -54,3 +54,5 @@ If you plan on working on any of the AWS related features, include the `aws_acce
 
 
 Note that the first user you create is granted admin status by default.
+
+This site is defunt now
