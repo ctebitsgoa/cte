@@ -81,7 +81,8 @@ export default function CompleteProfilePage() {
 
   const validateBitsId = (bitsId: string): boolean => {
     // BITS ID format: 2018A8PS0414G
-    const pattern = /^\d{4}(PH|[ABH](A|B|[0-9]))(PS|TS|PX|([ABH]|[0-9])(A|B|[0-9]))\d{4}[GHP]$/i
+    // AJ (Environmental), MM and RM are newer branch codes, e.g. 2025AJPS0123G
+    const pattern = /^\d{4}(PH|AJ|MM|RM|[ABH](A|B|[0-9]))(PS|TS|PX|AJ|MM|RM|([ABH]|[0-9])(A|B|[0-9]))\d{4}[GHP]$/i
     return pattern.test(bitsId.toUpperCase())
   }
 
