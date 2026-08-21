@@ -107,7 +107,7 @@ export default function CompleteProfilePage() {
     }
 
     if (!validateBitsId(formData.bits_id)) {
-      setError('Invalid BITS ID format. Example: 2018A8PS0414G')
+      setError('Invalid BITS ID format. Example: 2023AAPS0621G')
       return
     }
 
