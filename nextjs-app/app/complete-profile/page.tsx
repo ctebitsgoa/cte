@@ -81,8 +81,10 @@ export default function CompleteProfilePage() {
 
   const validateBitsId = (bitsId: string): boolean => {
     // BITS ID format: 2018A8PS0414G
-    // AD, AJ (Environmental), MM and RM are newer branch codes, e.g. 2025AJPS0123G
-    const pattern = /^\d{4}(PH|AD|AJ|MM|RM|[ABH](A|B|[0-9]))(PS|TS|PX|AD|AJ|MM|RM|([ABH]|[0-9])(A|B|[0-9]))\d{4}[GHP]$/i
+    // Only the shape is checked: 4-digit year, 4-char degree/branch block,
+    // 4-digit serial, campus letter. Branch codes are not enumerated because
+    // new ones (AD, AJ, MM, RM, ...) keep getting added.
+    const pattern = /^\d{4}[A-Z0-9]{4}\d{4}[GHP]$/i
     return pattern.test(bitsId.toUpperCase())
   }
 
