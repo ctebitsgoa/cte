@@ -50,21 +50,27 @@ ORDER BY (o.metadata->>'size')::bigint DESC
 LIMIT 5;
 
 -- ============================================================
--- Verifying — and what to expect
+-- Verifying — and a finding worth knowing
 -- ============================================================
 --   curl -sI "<public_url>" | grep -i cache-control
 --
--- IMPORTANT: this UPDATE fixes the metadata in the database, but the header
--- users actually receive will NOT change right away. The object's bytes are
--- untouched, so its ETag is unchanged, and the CDN goes on serving the
--- response headers it already had (you'll see `cf-cache-status: REVALIDATED`).
+-- On this project that currently returns `cache-control: no-cache` no matter
+-- what the metadata says. That was checked properly: objects were re-uploaded
+-- through the Storage API with cacheControl 31536000, their bytes and ETags
+-- changed, the CDN picked up the new content — and the served header was still
+-- `no-cache`, on both buckets, including a freshly written object.
 --
--- The new header takes effect the next time the object is *written*. So to
--- push it through, re-upload the file — through the admin UI is easiest, and
--- that also runs it through the downscaler in lib/image.ts and changes the
--- URL via the ?v= buster, which fixes the size and the CDN entry in one go.
+-- Every response also carries `sb-gateway-mode: direct`, so the header is being
+-- applied at Supabase's edge rather than coming from the object. It is not
+-- something the upload options or this UPDATE can change; it is a question for
+-- Supabase support / the project's plan settings.
 --
--- This matters much less once the next/image changes are deployed: visitors
--- then receive resized copies from the image optimizer (cached a year) and
--- stop pulling these originals from Storage at all.
+-- Keep this script anyway: the stored metadata is now correct, so the intended
+-- header applies the moment that gateway behaviour changes.
+--
+-- The practical mitigation is size, not caching, and that part is done:
+-- scripts/optimize-storage-images.mjs cut these covers from 40.7 MB to 15.8 MB.
+-- Once the next/image changes are deployed, visitors stop fetching these
+-- originals altogether — the optimizer pulls each one once and serves resized
+-- copies with its own year-long cache.
 -- ============================================================

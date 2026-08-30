@@ -23,7 +23,7 @@ export default function CourseCard({ course, isAdmin, children }: CourseCardProp
           width={600}
           height={360}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          style={{ width: '100%', height: 'auto', minHeight: '180px' }}
+          style={{ width: '100%', height: '200px' }}
         />
         <div className="card-container">
           <div>
