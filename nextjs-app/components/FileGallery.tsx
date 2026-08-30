@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 interface FileItem {
   id: string
@@ -141,7 +142,7 @@ export default function FileGallery({ files, onDelete, showDelete = false }: Fil
               }}
             >
               {isImage(file.mime_type) ? (
-                <img src={file.public_url} alt={file.file_name} />
+                <Image src={file.public_url} alt={file.file_name} width={400} height={280} sizes="200px" />
               ) : (
                 <div className="file-icon">{getFileIcon(file.mime_type)}</div>
               )}
@@ -174,7 +175,13 @@ export default function FileGallery({ files, onDelete, showDelete = false }: Fil
             <button className="lightbox-close" onClick={() => setSelectedFile(null)}>
               ×
             </button>
-            <img src={selectedFile.public_url} alt={selectedFile.file_name} />
+            <Image
+              src={selectedFile.public_url}
+              alt={selectedFile.file_name}
+              width={1600}
+              height={1200}
+              sizes="100vw"
+            />
             <p className="lightbox-caption">{selectedFile.file_name}</p>
           </div>
         </div>
@@ -210,7 +217,7 @@ export default function FileGallery({ files, onDelete, showDelete = false }: Fil
           overflow: hidden;
         }
 
-        .file-preview img {
+        .file-preview :global(img) {
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -287,7 +294,7 @@ export default function FileGallery({ files, onDelete, showDelete = false }: Fil
           max-height: 90vh;
         }
 
-        .lightbox-content img {
+        .lightbox-content :global(img) {
           max-width: 100%;
           max-height: 85vh;
           object-fit: contain;

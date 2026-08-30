@@ -20,14 +20,19 @@ export default function UploadsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
+  const [hasMore, setHasMore] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
 
-  const loadFiles = async () => {
+  // Loaded a page at a time — an admin's list covers every upload in the project.
+  const loadFiles = async (offset = 0) => {
     try {
-      const response = await fetch('/api/uploads')
+      const response = await fetch(`/api/uploads?offset=${offset}`)
       const data = await response.json()
-      
+
       if (response.ok) {
-        setFiles(data.uploads || [])
+        const page: FileItem[] = data.uploads || []
+        setFiles(prev => (offset === 0 ? page : [...prev, ...page]))
+        setHasMore(Boolean(data.hasMore))
       } else {
         setError(data.error || 'Failed to load files')
       }
@@ -35,7 +40,14 @@ export default function UploadsPage() {
       setError('Failed to load files')
     } finally {
       setLoading(false)
+      setLoadingMore(false)
     }
+  }
+
+  // files.length rather than a page counter, so a delete doesn't skip an item
+  const loadMore = () => {
+    setLoadingMore(true)
+    loadFiles(files.length)
   }
 
   useEffect(() => {
@@ -92,11 +104,20 @@ export default function UploadsPage() {
             ) : error ? (
               <div className="error-message">{error}</div>
             ) : (
-              <FileGallery
-                files={files}
-                onDelete={handleDelete}
-                showDelete={true}
-              />
+              <>
+                <FileGallery
+                  files={files}
+                  onDelete={handleDelete}
+                  showDelete={true}
+                />
+                {hasMore && (
+                  <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                    <button className="secondary" onClick={loadMore} disabled={loadingMore}>
+                      {loadingMore ? 'Loading...' : 'Load more'}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </section>
         </div>

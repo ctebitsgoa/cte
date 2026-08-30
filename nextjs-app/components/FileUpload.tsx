@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { downscaleImage } from '@/lib/image'
 
 interface UploadedFile {
   id?: string
@@ -59,7 +60,7 @@ export default function FileUpload({
 
       try {
         const formData = new FormData()
-        formData.append('file', file)
+        formData.append('file', await downscaleImage(file))
         formData.append('folder', folder)
         if (courseId) {
           formData.append('courseId', courseId)

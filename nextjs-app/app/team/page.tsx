@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface TeamMember {
   id: string
@@ -70,7 +71,7 @@ export default function TeamPage() {
                 <div key={m.id} className="team-card">
                   <div className="team-card-img">
                     {m.photo_url ? (
-                      <img src={m.photo_url} alt={m.name} />
+                      <Image src={m.photo_url} alt={m.name} width={320} height={320} sizes="160px" />
                     ) : (
                       <div className="team-card-placeholder">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -109,7 +110,7 @@ export default function TeamPage() {
           {/* Team Group Photo at the bottom */}
           {teamPhotoUrl && (
             <div className="team-group-photo">
-              <img src={teamPhotoUrl} alt="The CTE Team" />
+              <Image src={teamPhotoUrl} alt="The CTE Team" width={1400} height={800} sizes="(max-width: 740px) 100vw, 700px" />
             </div>
           )}
 
@@ -181,7 +182,7 @@ export default function TeamPage() {
           box-shadow: 0 3px 16px rgba(0,0,0,0.1);
           flex-shrink: 0;
         }
-        .team-card-img img {
+        .team-card-img :global(img) {
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -230,7 +231,7 @@ export default function TeamPage() {
           margin-left: auto;
           margin-right: auto;
         }
-        .team-group-photo img {
+        .team-group-photo :global(img) {
           width: 100%;
           display: block;
           object-fit: cover;

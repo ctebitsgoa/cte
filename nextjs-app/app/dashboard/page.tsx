@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Course } from '@/types/database'
 import Link from 'next/link'
+import Image from 'next/image'
 import Loading from '@/components/Loading'
 
 export default function DashboardPage() {
@@ -88,7 +89,13 @@ export default function DashboardPage() {
             {courses.map((course: any) => (
               <li key={course.id}>
                 <div>
-                  <img src={course.cover_image || '/images/default-course.png'} alt={course.name} />
+                  <Image
+                    src={course.cover_image || '/placeholder.svg'}
+                    alt={course.name}
+                    width={260}
+                    height={260}
+                    sizes="130px"
+                  />
                   <div>
                     <h3>{course.name}</h3>
                     {course.is_archived && <h4>Archived</h4>}

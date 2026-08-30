@@ -1,5 +1,6 @@
 import { Course } from '@/types/database'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ReactNode } from 'react'
 
 interface CourseCardProps {
@@ -16,10 +17,13 @@ export default function CourseCard({ course, isAdmin, children }: CourseCardProp
   return (
     <div className="card-wrap">
       <div className="card">
-        <img
-          src={course.cover_image || '/images/default-course.png'}
+        <Image
+          src={course.cover_image || '/placeholder.svg'}
           alt={course.name}
-          style={{ width: '100%', minHeight: '180px' }}
+          width={600}
+          height={360}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          style={{ width: '100%', height: 'auto', minHeight: '180px' }}
         />
         <div className="card-container">
           <div>

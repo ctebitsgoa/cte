@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Loading from '@/components/Loading'
+import { downscaleImage } from '@/lib/image'
 
 interface TeamMember {
   id: string
@@ -43,7 +44,7 @@ export default function AdminTeamPage() {
 
   const uploadFile = async (file: File): Promise<string | null> => {
     const fd = new FormData()
-    fd.append('file', file)
+    fd.append('file', await downscaleImage(file))
     fd.append('folder', 'team')
     const res = await fetch('/api/uploads', { method: 'POST', body: fd })
     if (res.ok) { const d = await res.json(); return d.file.url }

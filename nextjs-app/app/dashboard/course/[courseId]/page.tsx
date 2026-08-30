@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import Loading from '@/components/Loading'
 
 interface CoursePage {
@@ -50,6 +51,9 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
   const [deregOtp, setDeregOtp] = useState('')
   const [deregError, setDeregError] = useState('')
   const [deregistering, setDeregistering] = useState(false)
+  // PDFs are only streamed once the student asks for them — embedding every
+  // one on open pulled the whole file from Storage on every page view.
+  const [pdfPreviewFor, setPdfPreviewFor] = useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
 
@@ -368,11 +372,21 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
                     </button>
                   </a>
                 </div>
-                <iframe
-                  src={selectedPage.url}
-                  style={{ width: '100%', height: '80vh', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                  title={selectedPage.name}
-                />
+                {pdfPreviewFor === selectedPage.id ? (
+                  <iframe
+                    src={selectedPage.url}
+                    style={{ width: '100%', height: '80vh', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                    title={selectedPage.name}
+                  />
+                ) : (
+                  <button
+                    className="secondary"
+                    onClick={() => setPdfPreviewFor(selectedPage.id)}
+                    style={{ width: '100%', padding: '40px 20px', border: '1px dashed #d1d5db', borderRadius: '8px', background: '#f9fafb', color: '#6b7280' }}
+                  >
+                    Preview PDF here
+                  </button>
+                )}
               </div>
             ) : selectedPage.type === 'Link' && selectedPage.url ? (
               <div className="link-content">
@@ -432,9 +446,12 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
                   )}
                 </div>
               </div>
-              <img 
-                src={course.cover_image || '/placeholder.svg'} 
+              <Image
+                src={course.cover_image || '/placeholder.svg'}
                 alt={course.name}
+                width={500}
+                height={500}
+                sizes="(max-width: 768px) 100vw, 250px"
                 className="course-cover"
               />
             </div>
@@ -476,7 +493,7 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
                 gap: 10px;
                 flex-wrap: wrap;
               }
-              .course-cover {
+              :global(.course-cover) {
                 width: 250px;
                 height: 250px;
                 object-fit: cover;
@@ -525,7 +542,7 @@ export default function CourseViewPage({ params }: { params: Promise<{ courseId:
                 .course-header {
                   flex-direction: column-reverse;
                 }
-                .course-cover {
+                :global(.course-cover) {
                   width: 100%;
                   height: 200px;
                 }

@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Loading from '@/components/Loading'
+import { UPLOAD_CACHE_CONTROL } from '@/lib/utils'
+import { downscaleImage } from '@/lib/image'
 
 interface CoursePage {
   id: string
@@ -203,7 +205,7 @@ export default function ContentManagerPage({ params }: { params: Promise<{ id: s
 
     const { error: uploadError } = await supabase.storage
       .from('uploads')
-      .upload(filePath, file, { upsert: false })
+      .upload(filePath, await downscaleImage(file), { cacheControl: UPLOAD_CACHE_CONTROL, upsert: false })
 
     if (uploadError) {
       alert('Upload failed: ' + uploadError.message)

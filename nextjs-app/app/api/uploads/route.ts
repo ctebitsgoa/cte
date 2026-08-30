@@ -1,5 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { UPLOAD_CACHE_CONTROL } from '@/lib/utils'
+
+const DEFAULT_PAGE_SIZE = 24
+const MAX_PAGE_SIZE = 100
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +38,7 @@ export async function POST(request: NextRequest) {
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('uploads')
       .upload(filePath, file, {
-        cacheControl: '3600',
+        cacheControl: UPLOAD_CACHE_CONTROL,
         upsert: false
       })
 
@@ -155,6 +159,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const courseId = searchParams.get('courseId')
 
+    // Paginated: an admin can see every upload in the project, and returning
+    // them all made a single page view pull the whole media library.
+    const limit = Math.min(Math.max(Number(searchParams.get('limit')) || DEFAULT_PAGE_SIZE, 1), MAX_PAGE_SIZE)
+    const offset = Math.max(Number(searchParams.get('offset')) || 0, 0)
+
     let query = supabase
       .from('uploads')
       .select('*')
@@ -165,14 +174,14 @@ export async function GET(request: NextRequest) {
       query = query.eq('course_id', courseId)
     }
 
-    const { data: uploads, error } = await query
+    const { data: uploads, error } = await query.range(offset, offset + limit - 1)
 
     if (error) {
       console.error('Fetch error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ uploads })
+    return NextResponse.json({ uploads, hasMore: (uploads?.length ?? 0) === limit })
 
   } catch (error) {
     console.error('Fetch error:', error)

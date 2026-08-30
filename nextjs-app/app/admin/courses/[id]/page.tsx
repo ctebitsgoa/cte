@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Loading from '@/components/Loading'
 import { Course } from '@/types/database'
+import { UPLOAD_CACHE_CONTROL } from '@/lib/utils'
+import { downscaleImage } from '@/lib/image'
 
 export default function EditCoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -97,10 +99,11 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
     const fileExt = imageFile.name.split('.').pop()
     const fileName = `${id}.${fileExt}`
     const filePath = `courses/${fileName}`
+    const image = await downscaleImage(imageFile)
 
     const { error: uploadError } = await supabase.storage
       .from('course-images')
-      .upload(filePath, imageFile, { upsert: true })
+      .upload(filePath, image, { cacheControl: UPLOAD_CACHE_CONTROL, upsert: true })
 
     if (uploadError) {
       console.error('Upload error:', uploadError)
@@ -111,7 +114,8 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
       .from('course-images')
       .getPublicUrl(filePath)
 
-    return data.publicUrl
+    // The cover always lives at the same path, so bust the long cache on replace
+    return `${data.publicUrl}?v=${Date.now()}`
   }
 
   const uploadHandout = async (): Promise<string | null> => {
@@ -122,7 +126,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
 
     const { error: uploadError } = await supabase.storage
       .from('uploads')
-      .upload(filePath, handoutFile, { upsert: false })
+      .upload(filePath, handoutFile, { cacheControl: UPLOAD_CACHE_CONTROL, upsert: false })
 
     if (uploadError) {
       console.error('Handout upload error:', uploadError)

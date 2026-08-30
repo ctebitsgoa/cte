@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import Loading from '@/components/Loading'
 import TermsModal from '@/components/TermsModal'
 
@@ -240,7 +241,14 @@ export default function CatalogCourseDetailPage({ params }: { params: Promise<{ 
             </div>
           </div>
           <div className="course-detail-image">
-            <img src={course.cover_image || '/images/default-course.png'} alt={course.name} />
+            <Image
+              src={course.cover_image || '/placeholder.svg'}
+              alt={course.name}
+              width={700}
+              height={700}
+              sizes="(max-width: 768px) 100vw, 350px"
+              style={{ height: 'auto' }}
+            />
           </div>
         </div>
       </div>
@@ -385,7 +393,7 @@ export default function CatalogCourseDetailPage({ params }: { params: Promise<{ 
           color: #6b7280;
           font-size: 0.9rem;
         }
-        .course-detail-image img {
+        .course-detail-image :global(img) {
           max-width: 350px;
           width: 100%;
           border-radius: 8px;
@@ -540,7 +548,7 @@ export default function CatalogCourseDetailPage({ params }: { params: Promise<{ 
           .course-detail-grid {
             flex-direction: column-reverse;
           }
-          .course-detail-image img {
+          .course-detail-image :global(img) {
             max-width: 100%;
           }
         }
