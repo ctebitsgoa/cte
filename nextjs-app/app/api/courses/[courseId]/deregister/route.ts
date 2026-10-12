@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
 export async function POST(
@@ -43,8 +44,11 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid OTP. Please check with your coordinator.' }, { status: 400 })
   }
 
+  // Use admin client to bypass RLS for the delete operation
+  const adminSupabase = createAdminClient()
+
   // Check if user is actually registered
-  const { data: registration } = await supabase
+  const { data: registration } = await adminSupabase
     .from('user_courses')
     .select('*')
     .eq('user_id', user.id)
@@ -56,7 +60,7 @@ export async function POST(
   }
 
   // Deregister the student
-  const { error } = await supabase
+  const { error } = await adminSupabase
     .from('user_courses')
     .delete()
     .eq('user_id', user.id)

@@ -43,8 +43,11 @@ DROP POLICY IF EXISTS "Instructors can manage questions" ON questions;
 -- Drop user_courses policies
 DROP POLICY IF EXISTS "Users can view own registrations" ON user_courses;
 DROP POLICY IF EXISTS "Users can register for courses" ON user_courses;
+DROP POLICY IF EXISTS "Users can deregister from courses" ON user_courses;
 DROP POLICY IF EXISTS "Admins can view all registrations" ON user_courses;
 DROP POLICY IF EXISTS "Admins can manage all registrations" ON user_courses;
+DROP POLICY IF EXISTS "Admins can manage user_courses" ON user_courses;
+DROP POLICY IF EXISTS "Admins can manage registrations" ON user_courses;
 
 -- Drop uploads policies
 DROP POLICY IF EXISTS "Users can view uploads for registered courses" ON uploads;
@@ -119,12 +122,15 @@ CREATE POLICY "Admins can manage questions" ON questions
   FOR ALL USING (is_admin());
 
 -- USER_COURSES POLICIES
+-- SELECT: users can read their own registrations
 CREATE POLICY "Users can view own registrations" ON user_courses
   FOR SELECT USING (user_id = auth.uid() OR is_admin());
 
-CREATE POLICY "Users can register for courses" ON user_courses
-  FOR INSERT WITH CHECK (user_id = auth.uid());
+-- INSERT/DELETE: blocked for regular users via RLS.
+-- Only the server-side API routes (using service role key) can write.
+-- This prevents direct PostgREST API bypass of registration/deregistration logic.
 
+-- Admins can still manage everything via service role or dashboard
 CREATE POLICY "Admins can manage registrations" ON user_courses
   FOR ALL USING (is_admin());
 

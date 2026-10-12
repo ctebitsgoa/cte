@@ -32,4 +32,6 @@ CREATE TRIGGER keepalive_cleanup_trigger
   FOR EACH STATEMENT
   EXECUTE FUNCTION cleanup_keepalive();
 
--- No RLS needed - this is just for internal cron use
+-- Enable RLS with no policies = deny all direct API access.
+-- The cron job uses the service role key which bypasses RLS.
+ALTER TABLE public.keepalive ENABLE ROW LEVEL SECURITY;

@@ -247,9 +247,9 @@ CREATE POLICY "Users can create quiz attempts" ON quiz_attempts
 CREATE POLICY "Users can view own registrations" ON user_courses
   FOR SELECT USING (user_id = auth.uid());
 
--- Users can register for courses
-CREATE POLICY "Users can register for courses" ON user_courses
-  FOR INSERT WITH CHECK (user_id = auth.uid());
+-- INSERT/DELETE: blocked for regular users via RLS.
+-- Only the server-side API routes (using service role key) can write.
+-- This prevents direct PostgREST API bypass of registration/deregistration logic.
 
 -- Create helper functions for common queries
 CREATE OR REPLACE FUNCTION get_user_courses(p_user_id UUID)

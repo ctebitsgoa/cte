@@ -5,18 +5,10 @@
 ALTER TABLE courses ADD COLUMN IF NOT EXISTS deregistration_enabled BOOLEAN DEFAULT FALSE;
 ALTER TABLE courses ADD COLUMN IF NOT EXISTS deregistration_otp VARCHAR(4);
 
--- Allow students to delete their own registrations (for deregistration)
--- This supplements the existing insert policy
-CREATE POLICY "Users can deregister from courses" ON user_courses
-  FOR DELETE USING (user_id = auth.uid());
-
--- Admins can manage all user_courses
-CREATE POLICY "Admins can manage user_courses" ON user_courses
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+-- DELETE policy removed: deregistration is handled server-side only.
+-- The /api/courses/[courseId]/deregister route validates OTP + deregistration_enabled,
+-- then uses the service role key to bypass RLS for the actual delete.
+-- This prevents direct PostgREST API bypass of deregistration logic.
 
 -- Update get_user_courses function to include deregistration_enabled
 CREATE OR REPLACE FUNCTION get_user_courses(p_user_id UUID)

@@ -35,12 +35,15 @@ CREATE POLICY "Admins can delete users" ON users
   FOR DELETE USING (is_admin());
 
 -- ============================================================
--- FIX: Allow admins to view user_courses for all users
+-- FIX: user_courses policies (INSERT/DELETE blocked for regular users)
+-- Registration and deregistration only allowed through server-side API routes
 -- ============================================================
 
+-- Users can only SELECT their own registrations
 CREATE POLICY "Admins can view all registrations" ON user_courses
   FOR SELECT USING (is_admin() OR user_id = auth.uid());
 
+-- Admins can manage all registrations
 CREATE POLICY "Admins can manage all registrations" ON user_courses
   FOR ALL USING (is_admin());
 

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
 export async function POST(
@@ -31,8 +32,11 @@ export async function POST(
     return NextResponse.json({ error: 'Registration is closed for this course' }, { status: 403 })
   }
 
+  // Use admin client to bypass RLS for the write operation
+  const adminSupabase = createAdminClient()
+
   // Check if already registered
-  const { data: existing } = await supabase
+  const { data: existing } = await adminSupabase
     .from('user_courses')
     .select('*')
     .eq('user_id', user.id)
@@ -44,7 +48,7 @@ export async function POST(
   }
 
   // Register user for course
-  const { error } = await supabase
+  const { error } = await adminSupabase
     .from('user_courses')
     .insert({ user_id: user.id, course_id: courseId })
 
